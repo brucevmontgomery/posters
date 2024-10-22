@@ -1,0 +1,17 @@
+{
+  "pages": "Pages",
+  "auth": "Authentication",
+  "signup-1": "Sign up",
+  "signin-1": "Sign in",
+  "reset-password-1": "Reset Password",
+  "change-password": "Change Password",
+  "profile-settings": "Profile Settings",
+
+  "maintenance": "Maintenance",
+  "error": "Error",
+  "coming-soon": "Coming Soon",
+  "offline-ui": "Offline UI",
+
+  "documentation": "Documentation",
+  "sample-page": "Sample Page"
+}

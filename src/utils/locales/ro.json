@@ -1,0 +1,17 @@
+{
+  "pages": "Pagini",
+  "auth": "Autentificare",
+  "signup-1": "Înregistrare",
+  "signin-1": "Conectare",
+  "reset-password-1": "Resetare parolă",
+  "change-password": "Schimbare parolă",
+  "profile-settings": "Setări de profil",
+
+  "maintenance": "Întreținere",
+  "error": "Eroare",
+  "coming-soon": "În curând",
+  "offline-ui": "UI offline",
+
+  "documentation": "Documentație",
+  "sample-page": "Pagină de exemplu"
+}
