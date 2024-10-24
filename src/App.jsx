@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { IntlProvider } from 'react-intl';
 
 // auth provider
-import { JWTProvider as AuthProvider } from './contexts/JWTContext';
+import { FacebookProvider as AuthProvider } from './contexts/FacebookContext';
 
 // project import
 import routes, { renderRoutes } from './routes';

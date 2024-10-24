@@ -18,7 +18,7 @@ const fbOptions = {
 const initialState = {
   isLoggedIn: false,
   isInitialized: false,
-  user: null
+  user: {userName: "Login"}
 };
 
 // ==============================|| Facebook CONTEXT & PROVIDER ||============================== //
@@ -135,7 +135,7 @@ export const FacebookProvider = ({ children }) => {
         type: LOGIN,
         payload: {
           isLoggedIn: true,
-          user: {}
+          user: {name: "unknown"}
         }
       });
     } else {
@@ -175,21 +175,24 @@ export const FacebookProvider = ({ children }) => {
   }, []);
 
   const login = async (options) => {
-    FB.login(function(response) {
-      console.log("login response")
-      console.log(response)
+    FB.login(function (response) {
+      let userInfo = {
+        userName: '',
+        id: response.authResponse.userID,
+        accessToken: response.authResponse.accessToken,
+        grantedScopes: response.authResponse.grantedScopes
+      }
       if (response.status === 'connected') {
-        dispatch({
-          type: LOGIN,
-          payload: {
-            isLoggedIn: true,
-            user: {
-              id: response.authResponse.userID,
-              accessToken: response.authResponse.accessToken,
-              grantedScopes: response.authResponse.grantedScopes
+        FB.api(`${userInfo.id}`, function (response) {
+          userInfo.userName = response.name
+          dispatch({
+            type: LOGIN,
+            payload: {
+              isLoggedIn: true,
+              user: userInfo
             }
-          }
-        });
+          })
+        })
       }
     }, {
       scope: 'pages_show_list,read_insights,business_management,pages_read_engagement,pages_read_user_content,pages_manage_posts,pages_manage_engagement',

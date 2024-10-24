@@ -42,11 +42,17 @@ const currencies = [
 
 const NavRight = () => {
   const configContext = useContext(ConfigContext);
+  const auth = useAuth()
   const { logout } = useAuth();
   const { rtlLayout } = configContext.state;
   const { dispatch } = configContext;
 
   const [listOpen, setListOpen] = useState(false);
+
+  let userName = "unknown"
+  if(auth?.user?.userName) {
+    userName = auth.user.userName
+  }
 
   const handleChange = (lang) => {
     dispatch({ type: actionType.THEME_LOCALE, i18n: lang });
@@ -131,7 +137,7 @@ const NavRight = () => {
                       <img className="img-radius" src={avatar1} alt="Generic placeholder" />
                       <Card.Body className="p-0">
                         <p>
-                          <strong>John Doe</strong>
+                          <strong>{userName}</strong>
                           <span className="n-time text-muted">
                             <i className="icon feather icon-clock me-2" />
                             30 min
@@ -189,32 +195,12 @@ const NavRight = () => {
             <Dropdown.Menu align="end" className="profile-notification">
               <div className="pro-head">
                 <img src={avatar1} className="img-radius" alt="User Profile" />
-                <span>John Doe</span>
+                <span>{userName}</span>
                 <Link to="#" className="dud-logout" title="Logout">
                   <i className="feather icon-log-out" />
                 </Link>
               </div>
-              <ListGroup as="ul" bsPrefix=" " variant="flush" className="pro-body">
-                <ListGroup.Item as="li" bsPrefix=" ">
-                  <Link to="#" className="dropdown-item">
-                    <i className="feather icon-settings" /> Settings
-                  </Link>
-                </ListGroup.Item>
-                <ListGroup.Item as="li" bsPrefix=" ">
-                  <Link to="#" className="dropdown-item">
-                    <i className="feather icon-user" /> Profile
-                  </Link>
-                </ListGroup.Item>
-                <ListGroup.Item as="li" bsPrefix=" ">
-                  <Link to="#" className="dropdown-item">
-                    <i className="feather icon-mail" /> My Messages
-                  </Link>
-                </ListGroup.Item>
-                <ListGroup.Item as="li" bsPrefix=" ">
-                  <Link to="#" className="dropdown-item">
-                    <i className="feather icon-lock" /> Lock Screen
-                  </Link>
-                </ListGroup.Item>
+              <ListGroup as="ul" bsPrefix=" " variant="flush" className="pro-body">                
                 <ListGroup.Item as="li" bsPrefix=" ">
                   <Link to="#" className="dropdown-item" onClick={handleLogout}>
                     <i className="feather icon-log-out" /> Logout
