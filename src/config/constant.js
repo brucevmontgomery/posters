@@ -1,5 +1,5 @@
-export const BASE_URL = '/sample-page';
-export const BASE_TITLE = ' | Datta Able Premium React Hooks + Admin Template';
+export const BASE_URL = '/posters-launch';
+export const BASE_TITLE = ' | Posters Comment Processing';
 
 export const CONFIG = {
   layout: 'vertical', // vertical, horizontal

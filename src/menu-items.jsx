@@ -2,118 +2,44 @@
 import { FormattedMessage } from 'react-intl';
 
 const menuItems = {
-  items: [
+  items: [   
     {
-      id: 'pages',
-      title: <FormattedMessage id="pages" />,
+      id: 'autoClerk',
+      title: 'Auto-Clerk Facebook Sales',
       type: 'group',
-      icon: 'icon-pages',
+      icon: 'icon-autoclerk',
       children: [
         {
-          id: 'auth',
-          title: <FormattedMessage id="auth" />,
-          type: 'collapse',
-          icon: 'feather icon-lock',
-          children: [
-            {
-              id: 'signup-1',
-              title: <FormattedMessage id="signup-1" />,
-              type: 'item',
-              url: '/auth/signup-1',
-              target: true,
-              breadcrumbs: false
-            },
-            {
-              id: 'signin-1',
-              title: <FormattedMessage id="signin-1" />,
-              type: 'item',
-              url: '/auth/signin-1',
-              target: true,
-              breadcrumbs: false
-            },
-            {
-              id: 'reset-password-1',
-              title: <FormattedMessage id="reset-password-1" />,
-              type: 'item',
-              url: '/auth/reset-password-1',
-              target: true,
-              breadcrumbs: false
-            },
-            {
-              id: 'change-password',
-              title: <FormattedMessage id="change-password" />,
-              type: 'item',
-              url: '/auth/change-password',
-              target: true,
-              breadcrumbs: false
-            },
-            {
-              id: 'profile-settings',
-              title: <FormattedMessage id="profile-settings" />,
-              type: 'item',
-              url: '/auth/profile-settings',
-              target: true,
-              breadcrumbs: false
-            }
-          ]
+          id: 'posters-launch',
+          title: <FormattedMessage id="posters-launch" />,
+          type: 'item',
+          url: '/posters-launch',
+          classes: 'nav-item',
+          icon: 'fa fa-comments-dollar'
         },
         {
-          id: 'maintenance',
-          title: <FormattedMessage id="maintenance" />,
-          type: 'collapse',
-          icon: 'feather icon-sliders',
-          children: [
-            {
-              id: 'error',
-              title: <FormattedMessage id="error" />,
-              type: 'item',
-              url: '/maintenance/error',
-              target: true,
-              breadcrumbs: false
-            },
-            {
-              id: 'coming-soon',
-              title: <FormattedMessage id="coming-soon" />,
-              type: 'item',
-              url: '/maintenance/coming-soon',
-              target: true,
-              breadcrumbs: false
-            },
-            {
-              id: 'offline-ui',
-              title: <FormattedMessage id="offline-ui" />,
-              type: 'item',
-              url: '/maintenance/offline-ui',
-              target: true,
-              breadcrumbs: false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      id: 'support',
-      title: 'Support',
-      type: 'group',
-      icon: 'icon-support',
-      children: [
-        {
-          id: 'sample-page',
-          title: <FormattedMessage id="sample-page" />,
+          id: 'posters-live-sale',
+          title: <FormattedMessage id="posters-live-sale" />,
           type: 'item',
-          url: '/sample-page',
+          url: '/posters-live-sale',
           classes: 'nav-item',
-          icon: 'feather icon-sidebar'
+          icon: 'fa fa-comments-dollar'
         },
         {
-          id: 'documentation',
-          title: <FormattedMessage id="documentation" />,
+          id: 'posters-flash-sale',
+          title: <FormattedMessage id="posters-flash-sale" />,
           type: 'item',
-          icon: 'feather icon-book',
+          url: '/posters-flash-sale',
           classes: 'nav-item',
-          url: 'https://codedthemes.gitbook.io/datta/',
-          target: true,
-          external: true
+          icon: 'fa fa-comments-dollar'
+        },
+        {
+          id: 'posters-online-auction',
+          title: <FormattedMessage id="posters-online-auction" />,
+          type: 'item',
+          url: '/posters-online-auction',
+          classes: 'nav-item',
+          icon: 'fa fa-comments-dollar'
         }
       ]
     }

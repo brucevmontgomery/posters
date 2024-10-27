@@ -74,15 +74,7 @@ const Breadcrumb = () => {
                 <div className="page-header-title">
                   <h5 className="m-b-10">{title}</h5>
                 </div>
-                <ListGroup as="ul" bsPrefix=" " className="breadcrumb">
-                  <ListGroup.Item as="li" bsPrefix=" " className="breadcrumb-item">
-                    <Link to="/">
-                      <i className="feather icon-home" />
-                    </Link>
-                  </ListGroup.Item>
-                  {mainContent}
-                  {itemContent}
-                </ListGroup>
+                
               </div>
             </div>
           </div>

@@ -105,8 +105,23 @@ const routes = [
     routes: [
       {
         exact: 'true',
-        path: '/sample-page',
-        element: lazy(() => import('./views/extra/SamplePage'))
+        path: '/posters-launch',
+        element: lazy(() => import('./views/posters/postersLaunch'))
+      },
+      {
+        exact: 'true',
+        path: '/posters-live-sale',
+        element: lazy(() => import('./views/posters/postersLiveSale'))
+      },
+      {
+        exact: 'true',
+        path: '/posters-flash-sale',
+        element: lazy(() => import('./views/posters/postersFlashSale'))
+      },
+      {
+        exact: 'true',
+        path: '/posters-online-auction',
+        element: lazy(() => import('./views/posters/postersOnlineAuction'))
       },
       {
         path: '*',

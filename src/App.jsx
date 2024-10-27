@@ -12,16 +12,7 @@ import routes, { renderRoutes } from './routes';
 import { ConfigContext } from 'contexts/ConfigContext';
 
 function loadLocaleData(i18n) {
-  switch (i18n) {
-    case 'fr':
-      return import('utils/locales/fr.json');
-    case 'ro':
-      return import('utils/locales/ro.json');
-    case 'zh':
-      return import('utils/locales/zh.json');
-    default:
-      return import('utils/locales/en.json');
-  }
+  return import('utils/locales/en.json');
 }
 
 // ==============================|| APP ||============================== //
