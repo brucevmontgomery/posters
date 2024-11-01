@@ -1,3 +1,5 @@
+
+
 import { TZDate, tz } from "@date-fns/tz"
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { parse, format, isSunday, isWednesday, isSaturday, previousSaturday, previousSunday, isAfter, previousWednesday } from "date-fns"
@@ -24,11 +26,12 @@ function getDayorPrevDayDate(forDayOfWeek, hours, minutes, seconds = 0, miliseco
     let todayDayOfWeek = today.getDay()
 
   }
+    
 
   let nDate = new Date()
   console.log(nDate)
 
-  /*
+ 
   let dateStr = "2024-10-20 23:59:59"
   let saleDay = new Date(dateStr)
   let TZSaleDay = new TZDate(dateStr, "America/New_York")
@@ -52,7 +55,7 @@ function getDayorPrevDayDate(forDayOfWeek, hours, minutes, seconds = 0, miliseco
   console.log(saleDay.getDay())
   console.log(saleDay)
   console.log(isSunday(saleDay))
-  */
+ 
 
   let dateStr = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
   console.log(dateStr)
@@ -91,5 +94,6 @@ function getDayorPrevDayDate(forDayOfWeek, hours, minutes, seconds = 0, miliseco
   console.log(format(tdate, 'yyyy-MM-dd HH:mm:ss'))
 
   console.log(format(getDefaultAuctionDate(), 'yyyy-MM-dd HH:mm:ss'))
+ 
 
-  
+ 
