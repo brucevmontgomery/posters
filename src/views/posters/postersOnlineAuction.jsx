@@ -44,7 +44,7 @@ const postersOnlineAuction = () => {
 
   //Online auction group id = 2119358545044791
   function getGroupPosts(callback) {
-    FB.api(`2119358545044791?fields=name,feed`, function (response) {
+    FB.api(`2119358545044791?fields=feed`, function (response) {
       callback(response)
     })
   }
@@ -110,6 +110,8 @@ const postersOnlineAuction = () => {
   }
 
   function onGetBidWinners() {
+    let cancelAPI = false
+    let APITimers = []
     setIsLoadingBids(true)
     if (useTestData == true) {
       setTimeout(() => {
@@ -132,17 +134,22 @@ const postersOnlineAuction = () => {
           }
           apiCount++
           return new Promise((resolve, reject) => {
-            setTimeout(() => {
-              FB.api(`${postId}?fields=attachments{subattachments.limit(${postAttachmentsLimit}){target{id},description}}`, function (response) {
-                if (response?.error) {
-                  reject(response.error.message)
-                } else {
-                  let postIdx = allPostsAndAttachments.findIndex(post => post.id === postId)
-                  allPostsAndAttachments[postIdx].items = transformPostAttachments(response.attachments.data[0].subattachments.data)
-                  resolve()
-                }
-              })
+            let internalTimer = setTimeout(() => {
+              if (cancelAPI) {
+                reject("cancel")
+              } else {
+                FB.api(`${postId}?fields=attachments{subattachments.limit(${postAttachmentsLimit}){target{id},description}}`, function (response) {
+                  if (response?.error) {
+                    reject(response.error.message)
+                  } else {
+                    let postIdx = allPostsAndAttachments.findIndex(post => post.id === postId)
+                    allPostsAndAttachments[postIdx].items = transformPostAttachments(response.attachments.data[0].subattachments.data)
+                    resolve()
+                  }
+                })
+              }
             }, apiCallWaitTime)
+            APITimers.push(internalTimer)
           })
         })
       ).then(() => {
@@ -163,26 +170,40 @@ const postersOnlineAuction = () => {
         }).flat()
         Promise.all(commentAPICalls.map((a) => {
           return new Promise((apiResolve, apiReject) => {
-            setTimeout(() => {
-              FB.api(a.apiCall, function (response) {
-                if (response?.error) {
-                  apiReject(response.error.message)
-                } else {
-                  let itemIdx = allPostsAndAttachments[a.postIdx].items.findIndex(aItem => aItem.id === a.itemId)
-                  allPostsAndAttachments[a.postIdx].items[itemIdx].comments = (response.hasOwnProperty("comments") && response.comments.hasOwnProperty("data")) ? response.comments.data : []
-                  apiResolve()
-                }
-              })
+            let internalTimer = setTimeout(() => {
+              if (cancelAPI) {
+                reject("cancel")
+              } else {
+                FB.api(a.apiCall, function (response) {
+                  if (response?.error) {
+                    apiReject(response.error.message)
+                  } else {
+                    let itemIdx = allPostsAndAttachments[a.postIdx].items.findIndex(aItem => aItem.id === a.itemId)
+                    allPostsAndAttachments[a.postIdx].items[itemIdx].comments = (response.hasOwnProperty("comments") && response.comments.hasOwnProperty("data")) ? response.comments.data : []
+                    apiResolve()
+                  }
+                })
+              }
             }, a.waitTime)
+            APITimers.push(internalTimer)
           })
         })).then(() => {
           determineWinningBids(allPostsAndAttachments)
+          setIsLoadingBids(false)
         }).catch((error) => {
-          //TODO: Stop the rest of the promises from executing
+          setIsLoadingBids(false)
+          cancelAPI = true
+          APITimers.forEach((t) => {
+            clearTimeout(t)
+          })
           setShowErrorModal({ show: true, error: error })
         })
       }).catch((error) => {
-        //TODO: Stop the rest of the promises from executing
+        setIsLoadingBids(false)
+        cancelAPI = true
+        APITimers.forEach((t) => {
+          clearTimeout(t)
+        })
         setShowErrorModal({ show: true, error: error })
       })
     }
@@ -191,14 +212,10 @@ const postersOnlineAuction = () => {
 
   function determineWinningBids(postsItemsAndComments) {
     const firstNumRegEx = /\d+/
-    console.log("postsItemsAndComments", postsItemsAndComments)
-    console.log("auctionEndDateTime", auctionEndDateTime.current)
     let aeDate = auctionEndDateTime.current
     let postsWithItems = postsItemsAndComments.filter((p) => p.items != null)
     let allItems = postsWithItems.map((a) => a.items).flat()
-    console.log("all items", allItems)
     let bidWinners = allItems.map((a) => {
-      console.log("Item: ", a.itemNum, " ", a.description)
       if (a.comments.length > 0 == true) {
         let allowedComments = a.comments.filter((c) => {
           let cDate = new Date(c.created_time)
@@ -224,21 +241,15 @@ const postersOnlineAuction = () => {
             return 0
           }
         })
-        console.log("winning bids")
-        console.log(winningBids)
         if (winningBids.length > 0) {
           return ({ id: a.id, itemNum: a.itemNum, description: a.description, winner: { person: 'unknown', winningBid: maxBid, bidTime: winningBids[0].created_time } })
         } else {
-          console.log('no bids')
           return ({ id: a.id, itemNum: a.itemNum, description: a.description, winner: { person: 'no bidders', winningBid: 0, bidTime: null } })
         }
       } else {
-        console.log('no bids')
         return ({ id: a.id, itemNum: a.itemNum, description: a.description, winner: { person: 'no bidders', winningBid: 0, bidTime: null } })
       }
     })
-    console.log('bid winners')
-    console.log(bidWinners)
     bidWinners = bidWinners.sort((a, b) => {
       if (a.itemNum < b.itemNum) {
         return -1
@@ -387,35 +398,35 @@ const postersOnlineAuction = () => {
                     Download Winners
                   </Button>
                 </Col>
-              </Row>                           
+              </Row>
               <Table ref={winnersTableRef} responsive >
-                  <tbody>
-                    <tr>
-                      <th>#</th>
-                      <th>Item</th>
-                      <th>Winner</th>
-                      <th>Winning Bid</th>
-                      <th>Time of Bid</th>
-                    </tr>
-                    {winningBids &&
-                      winningBids.map((item) => (
-                        <tr key={item.id}>
-                          <td>{item.itemNum}</td>
-                          <td>{item.description}</td>
-                          <td>{item.winner.person}</td>
-                          <td>{item.winner.winningBid}</td>
-                          <td>{item.winner.bidTime}</td>
-                        </tr>
-                      ))
-                    }
-                  </tbody>
-                </Table>
-                {isLoadingBids &&
-                  <div className="spinner-border" role="status">
-                    <span className="sr-only">Loading...</span>
-                    <br /><br />
-                  </div>
-                }
+                <tbody>
+                  <tr>
+                    <th>#</th>
+                    <th>Item</th>
+                    <th>Winner</th>
+                    <th>Winning Bid</th>
+                    <th>Time of Bid</th>
+                  </tr>
+                  {winningBids &&
+                    winningBids.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.itemNum}</td>
+                        <td>{item.description}</td>
+                        <td>{item.winner.person}</td>
+                        <td>{item.winner.winningBid}</td>
+                        <td>{item.winner.bidTime}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </Table>
+              {isLoadingBids &&
+                <div className="spinner-border" role="status">
+                  <span className="sr-only">Loading...</span>
+                  <br /><br />
+                </div>
+              }
             </Card.Body>
           </Card>
         </Col>
