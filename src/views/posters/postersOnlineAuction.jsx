@@ -30,11 +30,11 @@ function getDefaultAuctionDate() {
 
 const postersOnlineAuction = () => {
   const auctionEndDateTime = useRef(getDefaultAuctionDate())
-  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false)
   const [showErrorModal, setShowErrorModal] = useState({ show: false, error: "" })
   const [posts, setPosts] = useState(null)
-  const [checkedPosts, setcheckedPosts] = useState({ count: 0 });
-  const [isLoadingBids, setIsLoadingBids] = useState(false);
+  const [checkedPosts, setcheckedPosts] = useState({ count: 0 })
+  const [isLoadingBids, setIsLoadingBids] = useState(false)
   const [winningBids, setWinningBids] = useState(null)
   const winnersTableRef = useRef(null)
 

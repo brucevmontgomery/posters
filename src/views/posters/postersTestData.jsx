@@ -1,6 +1,6 @@
 export const useTestData = false
-export const postAttachmentsLimit = 3
-export const attachmentCommentsLimit = 3
+export const postAttachmentsLimit = 50
+export const attachmentCommentsLimit = 50
 
 export const testCrazyJoesGroup = {
     "name": "Crazy Joe's Online Auction",
