@@ -1,7 +1,30 @@
-const pattern =  /^\s*\bFlash\s*\s*Sale\s*/
-const testPattern = /^\s*\bTest\s*Flash\s*\s*Sale\s*/
-const str = "Test Flash Sale - sdfsdfdf"
-console.log(str.match(testPattern))
+let vals = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+function getResults(index) {
+    console.log(vals[index])
+    return new Promise((resolve, reject) => {
+        if (vals[index] == 5) {
+            console.log("error")
+            reject({code: 1, error: "error"})
+        } else {
+            if (index < 8) {
+                getResults(index + 1)
+                    .then((val) => {
+                        resolve(vals[index] + val)
+                    })
+                    .catch((error) => {reject(error)})
+            } else {
+                resolve(vals[index])
+            }
+        }
+    })
+}
+
+getResults(0)
+    .then((value) => console.log(value))
+    .catch((error) => {
+        console.log(error)
+    })
 
 
 

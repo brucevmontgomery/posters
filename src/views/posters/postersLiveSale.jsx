@@ -8,7 +8,8 @@ import { useDownloadExcel } from 'react-export-table-to-excel'
 
 import facebookLiveImg from '../../assets/images/auction/facebook-live-sale.jpg'
 
-import { useTestData, postAttachmentsLimit, attachmentCommentsLimit, groupPosts, testAllPostsAndAttachments } from '../posters/postersTestData'
+import { useTestData, attachmentCommentsLimit, groupPosts } from '../posters/postersTestData'
+import { testDataLiveSale } from '../posters/postersTestDataLiveSale'
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -18,15 +19,24 @@ const postersLiveSale = () => {
   const [posts, setPosts] = useState(null)
   const [checkedPosts, setcheckedPosts] = useState({ count: 0 })
   const pageAccessToken = useRef(null)
+  const [isLoadingBids, setIsLoadingBids] = useState(false)
   const [winningBids, setWinningBids] = useState(null)
   const winnersTableRef = useRef(null)
 
   function getGroupPosts(callback) {
     FB.api(`308365803341085?fields=access_token`, function (response) {
-      FB.api(`308365803341085?fields=name,feed.limit(10)&access_token=${response.access_token}`, function (feedResponse) {
-        pageAccessToken.current = response.access_token
-        callback(feedResponse)
-      })
+      if (response?.error) {
+        callback(response)
+      } else {
+        FB.api(`308365803341085?fields=name,feed.limit(10)&access_token=${response.access_token}`, function (feedResponse) {
+          if (feedResponse?.error) {
+            callback(feedResponse)
+          } else {
+            pageAccessToken.current = response.access_token
+            callback(feedResponse)
+          }
+        })
+      }
     })
   }
 
@@ -67,8 +77,8 @@ const postersLiveSale = () => {
           setIsLoadingPosts(false)
           setShowErrorModal({ show: true, error: response.error.message })
         } else {
-          setPostsAndDefaultChecks(response)
           setIsLoadingPosts(false)
+          setPostsAndDefaultChecks(response)
         }
       })
     }
@@ -77,7 +87,18 @@ const postersLiveSale = () => {
   function onGetBuyers() {
 
     function transformComments(comments) {
-      return comments.map((c) => {
+      let sortedComments = comments.sort((a, b) => {
+        let aTime = new Date(a.created_time)
+        let bTime = new Date(b.created_time)
+        if (aTime < bTime) {
+          return -1
+        } else if (aTime > bTime) {
+          return 1
+        } else {
+          return 0
+        }
+      })
+      return sortedComments.map((c) => {
         let ct = new Date(c.created_time)
         let bt = `${ct.getMonth().toString().padStart(2, '0')}/${ct.getDate().toString().padStart(2, '0')}/${ct.getFullYear()} ${ct.getHours().toString().padStart(2, '0')}:${ct.getMinutes().toString().padStart(2, '0')}:${ct.getSeconds().toString().padStart(2, '0')}`
         return ({
@@ -88,6 +109,7 @@ const postersLiveSale = () => {
       })
     }
 
+    //TODO: look at playground2 to handle recursive promises with error handling
     function getComments(postId, nextAPICall, apiCallWaitStep, results = []) {
       let apiCall = ''
       if (postId != null) {
@@ -97,67 +119,61 @@ const postersLiveSale = () => {
       }
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          console.log("apiCall")
-          console.log(apiCall)
           FB.api(apiCall, function (response) {
-            console.log("response")
-            console.log(response)
-            if (response?.comments?.data || response?.data) {
-              let comments = []
-              let pagingObj = null
-              if(response?.data) {
-                comments = response.data
-                pagingObj = response
-              } else {
-                comments = response.comments.data
-                pagingObj = response.comments
-              }               
-              console.log(results)
-              console.log(comments)
-              results.push(...comments)
-              console.log("comments")
-              console.log(results)
-              if (pagingObj?.paging?.next) {
-                console.log("recurse")
-                resolve(getComments(null, pagingObj.paging.next, apiCallWaitStep, results))
+            if (response?.error) {
+              reject(response.error.message)
+            } else {
+              if (response?.comments?.data || response?.data) {
+                let comments = []
+                let pagingObj = null
+                if (response?.data) {
+                  comments = response.data
+                  pagingObj = response
+                } else {
+                  comments = response.comments.data
+                  pagingObj = response.comments
+                }
+                results.push(...comments)
+                if (pagingObj?.paging?.next) {
+                  getComments(null, pagingObj.paging.next, apiCallWaitStep, results)
+                    .then((val) => {
+                      resolve(val)
+                    })
+                    .catch((error) => {reject(error)})
+                } else {
+                  resolve(results)
+                }
               } else {
                 resolve(results)
               }
-            } else {
-              resolve(results)
             }
           })
         }, apiCallWaitStep)
       })
     }
 
+    setIsLoadingBids(true)
     if (useTestData == true) {
-      console.log("before call to determineWinningBids")
-      console.log(testItemsAndBidders)
-      setWinningBids(transformComments(testLiveAuctionComments)) 
+      setTimeout(() => {
+        console.log(testDataLiveSale)
+        setIsLoadingBids(false)
+        setWinningBids(transformComments(testDataLiveSale))
+      }, 2000)
     } else {
       let postIds = Object.entries(checkedPosts).filter(([key, value]) => key != "count").map((e) => e[0])
-      let allPostsAndAttachments = posts
-      let apiCount = 0
-      let apiCallGroupSize = 1
-      let apiCallWaitStep = 2000
-      let apiCallWaitTime = -apiCallWaitStep
-      console.log("get bid winners")
-      console.log(postIds)
-      console.log("start")
-      console.log(new Date())
-      //TODO: This just needs to get the comments on the selected post. Does not need to process attachments.
-      //TODO: Need to page through the comments. We can expect 100s to 1000s of comments per live auction
-      //This code just sets up the first call. Will need to modify to use setTimeout around each page call
-      console.log("page access token")
-      console.log(pageAccessToken.current)
-      let postIdx = allPostsAndAttachments.findIndex(post => post.id === postIds[0])
+      let apiCallWaitStep = 3000
+      //TODO: handle error handling for getComments
       getComments(postIds[0], null, apiCallWaitStep)
         .then(allComments => {
           console.log("allComments")
           console.log(allComments)
-          allPostsAndAttachments[postIdx].comments = allComments
+          setIsLoadingBids(false)
           setWinningBids(transformComments(allComments))
+        })
+        .catch((error) => {
+          console.log(error)
+          setIsLoadingBids(false)
+          setShowErrorModal({ show: true, error: error })
         })
     }
   }
@@ -283,6 +299,12 @@ const postersLiveSale = () => {
                   }
                 </tbody>
               </Table>
+              {isLoadingBids &&
+                <div className="spinner-border" role="status">
+                  <span className="sr-only">Loading...</span>
+                  <br /><br />
+                </div>
+              }
             </Card.Body>
           </Card>
         </Col>
