@@ -1,3 +1,4 @@
+/*
 let vals = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 function getResults(index) {
@@ -25,7 +26,11 @@ getResults(0)
     .catch((error) => {
         console.log(error)
     })
+*/
 
 
+let c = {messacge: "ddfdf", story: "xxxxxx"}
+let p = c?.message ? c.message : c.story
+console.log(p)
 
 

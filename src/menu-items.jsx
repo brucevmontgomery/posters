@@ -5,7 +5,7 @@ const menuItems = {
   items: [   
     {
       id: 'autoClerk',
-      title: 'Auto-Clerk Facebook Sales',
+      title: 'Auto-Clerk On-Line Sales',
       type: 'group',
       icon: 'icon-autoclerk',
       children: [

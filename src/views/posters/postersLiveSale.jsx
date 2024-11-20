@@ -49,7 +49,7 @@ const postersLiveSale = () => {
       let data = posts.feed.data.map((p) =>
       ({
         id: p.id,
-        post: p.message,
+        post: p?.message ? p.message : p.story,
         items: null
       }))
       data.forEach((post) => {
@@ -77,6 +77,7 @@ const postersLiveSale = () => {
           setIsLoadingPosts(false)
           setShowErrorModal({ show: true, error: response.error.message })
         } else {
+          console.log(response)
           setIsLoadingPosts(false)
           setPostsAndDefaultChecks(response)
         }
@@ -102,7 +103,7 @@ const postersLiveSale = () => {
         let ct = new Date(c.created_time)
         let bt = `${ct.getMonth().toString().padStart(2, '0')}/${ct.getDate().toString().padStart(2, '0')}/${ct.getFullYear()} ${ct.getHours().toString().padStart(2, '0')}:${ct.getMinutes().toString().padStart(2, '0')}:${ct.getSeconds().toString().padStart(2, '0')}`
         return ({
-          person: "unknown",
+          person: c?.from?.name ? c?.from?.name : "unknown",
           message: c.message,
           bidTime: bt
         })

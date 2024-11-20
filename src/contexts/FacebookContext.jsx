@@ -182,6 +182,7 @@ export const FacebookProvider = ({ children }) => {
         accessToken: response.authResponse.accessToken,
         grantedScopes: response.authResponse.grantedScopes
       }
+      console.log(userInfo)
       if (response.status === 'connected') {
         FB.api(`${userInfo.id}`, function (response) {
           userInfo.userName = response.name
@@ -195,7 +196,10 @@ export const FacebookProvider = ({ children }) => {
         })
       }
     }, {
-      scope: 'pages_show_list,read_insights,business_management,pages_read_engagement,pages_read_user_content,pages_manage_posts,pages_manage_engagement',
+      //TODO: reduce permissions to only those that are actually required
+      //scope: 'pages_show_list,read_insights,business_management,pages_read_engagement,pages_read_user_content,pages_manage_posts,pages_manage_engagement',
+      scope: 'business_management,pages_show_list,pages_read_engagement,pages_read_user_content,pages_manage_engagement',
+      //read_insights,pages_show_list,business_management,pages_read_engagement,pages_read_user_content,pages_manage_posts,pages_manage_engagement
       return_scopes: true
     })
   };

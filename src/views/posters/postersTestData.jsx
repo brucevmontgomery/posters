@@ -1,5 +1,5 @@
 export const useTestData = false
-export const postAttachmentsLimit = 50
+export const postAttachmentsLimit = 3
 export const attachmentCommentsLimit = 50
 
 export const testCrazyJoesGroup = {
